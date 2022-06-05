@@ -10,10 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_06_03_222438) do
+ActiveRecord::Schema.define(version: 2022_06_05_203359) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "contacts", force: :cascade do |t|
+    t.string "description"
+    t.string "email"
+    t.string "telephone"
+    t.string "telephone2"
+    t.boolean "main"
+    t.bigint "customer_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["customer_id"], name: "index_contacts_on_customer_id"
+  end
 
   create_table "customers", force: :cascade do |t|
     t.string "fantasyName"
@@ -25,4 +37,26 @@ ActiveRecord::Schema.define(version: 2022_06_03_222438) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  create_table "facilities", force: :cascade do |t|
+    t.string "cep"
+    t.string "complement"
+    t.string "number"
+    t.string "city"
+    t.string "state"
+    t.string "country"
+    t.string "description"
+    t.bigint "customer_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["customer_id"], name: "index_facilities_on_customer_id"
+  end
+
+  create_table "operations", force: :cascade do |t|
+    t.string "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  add_foreign_key "contacts", "customers"
+  add_foreign_key "facilities", "customers"
 end
