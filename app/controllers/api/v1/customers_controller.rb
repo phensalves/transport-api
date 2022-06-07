@@ -3,9 +3,27 @@ class Api::V1::CustomersController < ApplicationController
 
   # GET /customers
   def index
-    @customers = Customer.all
+    per_page = params[:per_page] ? params[:per_page] : 10
+    @customers = Customer.all.paginate(page: params[:page], per_page: per_page)
 
-    render json: @customers
+    if @customers.length >= 1
+      render json: {
+        status: 'SUCCESS',
+        menssage: 'Successfully',
+        data: @customers,
+        per_page: per_page.to_i,
+        total_data: @customers.count,
+        current_page: params[:page].to_i ? params[:page].to_i : 0,
+        total_pages: @customers.total_pages
+      },
+      include: [
+        {facilities: {except: [:created_at, :updated_at]}},
+        {operations: {expect: [:created_at, :updated_at]}},
+        {contacts: {except: [:created_at, :updated_at]}}
+      ],
+      :except => :operation_ids
+    else
+    end
   end
 
   # GET /customers/1
