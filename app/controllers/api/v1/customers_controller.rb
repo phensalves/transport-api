@@ -23,12 +23,27 @@ class Api::V1::CustomersController < ApplicationController
       ],
       :except => :operation_ids
     else
+      per_page  = 0
+      total_pages = 0
+      render json: {
+        status: 'SUCCESS',
+        menssage: 'There are no customers registered in this page',
+        data: [],
+        per_page: per_page.to_i,
+        total_data: @customers.count,
+        current_page: params[:page].to_i ? params[:page].to_i : 0,
+        total_pages: @customers.total_pages
+      }
     end
   end
 
   # GET /customers/1
   def show
-    render json: @customer
+    render json: {
+      status: 'SUCCESS',
+      message: 'Successfully',
+      data: @customer
+    }
   end
 
   # POST /customers
