@@ -3,9 +3,35 @@ class Api::V1::OperationsController < ApplicationController
 
   # GET /operations
   def index
-    @operations = Operation.all
+    per_page = params[:per_page] ? params[:per_page] : 10
+    @operations = Operation.all.paginate(page: params[:page], per_page: per_page)
 
-    render json: @operations
+    if @operations.length >= 1
+      render json: {
+        status: 'SUCCESS',
+        menssage: 'Successfully',
+        data: @operations,
+        per_page: per_page.to_i,
+        total_data: @operations.count,
+        current_page: params[:page].to_i ? params[:page].to_i : 0,
+        total_pages: @operations.total_pages
+      },
+      include: {
+        customers: { except: [:created_at, :updated_at] }
+      }
+    else
+      per_page  = 0
+      total_pages = 0
+      render json: {
+        status: 'SUCCESS',
+        menssage: 'There are no customers registered in this page',
+        data: [],
+        per_page: per_page.to_i,
+        total_data: @operations.count,
+        current_page: params[:page].to_i ? params[:page].to_i : 0,
+        total_pages: @operations.total_pages
+      }
+    end
   end
 
   # GET /operations/1
@@ -15,6 +41,7 @@ class Api::V1::OperationsController < ApplicationController
 
   # POST /operations
   def create
+    binding.pry
     @operation = Operation.new(operation_params)
 
     if @operation.save
